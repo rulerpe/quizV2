@@ -1,7 +1,38 @@
 (function(){
-	
+	var content = document.getElementById("content");
 	var btn = document.getElementsByClassName("button");
-	btn[0].addEventListener("click", function(){alert("hello");},false);
+	
+	for (var i=0, x=btn.length; i<x ; i++){
+		btn[i].addEventListener("click", buttonDown,false);
+	}
+	
+	function buttonDown(e){
+		var regTag = e.target;
+		console.log(typeof regTag);
+		if (hasClass(regTag,"reg")){
+			reg();
+		}else if (hasClass(regTag,"log")){
+			log();
+		}else if (hasClass(regTag,"formReg")){
+			formReg();
+		}
+	}
+
+	function hasClass(element, cls) {
+    	return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
+	}
+
+
+	function reg(){
+		content.innerHTML = '<div class="row enter"><form name="reg"><div class="form"><label class="title">User Name: </label><input type="text" name="username" /></div><div class="form"><label class="title">Email: </label><input type="text" name="email" /><div><div class="formReg button">Regerster</div></form></div>';
+	}
+	function log(){
+		content.innerHTML = '<div class="row enter"><form name="log"><div class="form"><label class="title">User Name: </label><input type="text" name="username" /></div><div class="form"><label class="title">Email: </label><input type="text" name="email" /><div><div class="formLog button">Log In</div></form></div>';
+	}
+	function formReg(){
+		var form = getElementsByTagName("form");
+		
+	}
 	
 	function User(theName, theEmail){
 		this.name = theName;
