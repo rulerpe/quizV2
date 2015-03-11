@@ -21,6 +21,10 @@
 			formReg();
 		}else if (hasClass(regTag,"formLog")){
 			formLog();
+		}else if (hasClass(regTag,"next")){
+			next();
+		}else if (hasClass(regTag,"back")){
+			back();
 		}
 	}
 
@@ -34,6 +38,9 @@
 			btn[i].addEventListener("click", buttonDown,false);
 		}
 	}
+	
+
+
 
 //////////////////////////////////////////////functions for log in and reg ////////////////////////////////////////////////////
 
@@ -48,7 +55,9 @@
 	function formReg(){
 		var form = document.getElementById("forms");
 		var user = new User(form.elements[0].value,form.elements[1].value)
-		save(user.name, user.email, user.quizScores);	
+		save(user.name, user.email, user.quizScores);
+		content.innerHTML = allQuestions[0].displayQuestion();
+		addBtnListiener();	
 	}
 	function formLog(){
 		var form = document.getElementById("forms");
@@ -57,6 +66,8 @@
 		console.log(load(name));
 
 		content.innerHTML = allQuestions[0].displayQuestion();
+		addBtnListiener();
+		option();
 		
 	}
 
@@ -83,8 +94,35 @@
 //////////////////////////////////////////////functions for log in and reg end////////////////////////////////////////////////////
 
 //////////////////////////////////////////////functions for qustion and answer ////////////////////////////////////////////////////
+	function optionDown(y){
+		User.currentPick = y;
+		var options = document.getElementsByClassName("choice");
+		for(var i =0, x=options.length; i<x;i++){
+			if (i==y){
+				options[i].className = "down choice";
+			}else{
+				options[i].className = "choice";
+			}
+			
+		}
+	}
 
-	
+	function option(){
+		var options = document.getElementsByClassName("choice");
+		options[0].addEventListener("click", function(){optionDown(0)},false);
+		options[1].addEventListener("click", function(){optionDown(1)},false);
+		options[2].addEventListener("click", function(){optionDown(2)},false);
+		options[3].addEventListener("click", function(){optionDown(3)},false);
+	}
+
+	function next(){
+		
+	}
+
+	function back(){
+		
+	}
+
 //////////////////////////////////////////////functions for qustion and answer end////////////////////////////////////////////////////
 	
 	function User(theName, theEmail){
@@ -92,6 +130,7 @@
 		this.email = theEmail;
 		this.quizScores = [];
 		this.currentScore = 0;
+		this.currentPick = "";
 	}
 
 	User.prototype.constructor = User;
@@ -118,7 +157,11 @@
 
 
 	Question.prototype.displayQuestion = function(){
-		var questionToDisplay = "<div class='question'>"+this.question +"</div>";
+		var questionToDisplay = '<div class ="game"><div class="question">'+this.question +'</div><ul>';
+		this.choice.forEach(function(value,key,array){
+			questionToDisplay += "<li class='choice'>"+value+"</li>";
+		});
+		questionToDisplay += '</ul><div class="button back">Back</div><div class="button next">next</div></div>';
 		return questionToDisplay;
 	}
 	Question.prototype.getCorrectAnswer = function(){
