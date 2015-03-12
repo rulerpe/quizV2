@@ -1,6 +1,6 @@
 (function(){
 	var content = document.getElementById("content");
-
+	var user;
 	addBtnListiener();
 	
 	var allQuestions =  [ 	
@@ -54,10 +54,11 @@
 	}
 	function formReg(){
 		var form = document.getElementById("forms");
-		var user = new User(form.elements[0].value,form.elements[1].value)
+		user = new User(form.elements[0].value,form.elements[1].value)
 		save(user.name, user.email, user.quizScores);
 		content.innerHTML = allQuestions[0].displayQuestion();
 		addBtnListiener();	
+		option();
 	}
 	function formLog(){
 		var form = document.getElementById("forms");
@@ -75,14 +76,14 @@
 		var saveUser = {	name: saveName,
 							email: saveEmail,
 							scores: saveScores};
-		var save = JSON.stringify(saveUser);
-		localStorage.setItem(saveName,save);
+		var saves = JSON.stringify(saveUser);
+		localStorage.setItem(saveName,saves);
 	}
 
 	function load(loadName){
 		if(localStorage.getItem(loadName)){
 			var loadUser = JSON.parse(localStorage.getItem(loadName));
-			var user = new User(loadUser.name, loadUser.email);
+			user = new User(loadUser.name, loadUser.email);
 			user.quizScores = loadUser.scores;
 			return("Welcome back "+ user.name);
 		}else{
@@ -95,7 +96,7 @@
 
 //////////////////////////////////////////////functions for qustion and answer ////////////////////////////////////////////////////
 	function optionDown(y){
-		User.currentPick = y;
+		user.currentPick = y;
 		var options = document.getElementsByClassName("choice");
 		for(var i =0, x=options.length; i<x;i++){
 			if (i==y){
@@ -117,10 +118,48 @@
 
 	function next(){
 		
+		if (user.pos<(allQuestions.length-1)){
+			allQuestions[user.pos].userAnswer = user.currentPick;
+			user.pos++;
+			content.innerHTML = allQuestions[user.pos].displayQuestion();
+			option();
+			if(allQuestions[user.pos].userAnswer  != ""){
+				optionDown(allQuestions[user.pos].userAnswer);
+			}			
+		}else if (user.pos<(allQuestions.length)){
+			allQuestions[user.pos].userAnswer = user.currentPick;
+			user.pos++;
+			score();
+			content.innerHTML = '<div class ="game"><div class="question">Your score is '+user.currentScore+'</div><div class="button back">Back</div></div>';
+			user.quizScores.push(user.currentScore);
+			save(user.name, user.email, user.quizScores);
+		}
+		addBtnListiener();
+		
+		
+
 	}
 
 	function back(){
+		if(user.pos>0){
+			user.pos--;
+			content.innerHTML = allQuestions[user.pos].displayQuestion();
+			addBtnListiener();
+			option();
+			if(allQuestions[user.pos].userAnswer  != ""){
+				optionDown(allQuestions[user.pos].userAnswer);
+			}
+		}
 		
+	}
+
+	function score(){
+		user.currentScore=0;
+		allQuestions.forEach(function(v,i,a){
+			if (v.answer == v.userAnswer){
+				user.currentScore++;
+			}
+		})
 	}
 
 //////////////////////////////////////////////functions for qustion and answer end////////////////////////////////////////////////////
@@ -131,6 +170,8 @@
 		this.quizScores = [];
 		this.currentScore = 0;
 		this.currentPick = "";
+		this.allpicks = [];
+		this.pos = 0;
 	}
 
 	User.prototype.constructor = User;
